@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-stack
+  labels: 
+   app: mystack
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+     app: mystack
+  template:
+    metadata:
+     labels:
+      app: mystack
+    spec:
+     containers:
+     - name: nginx
+       image: nginx:1.14.2
+       ports:
+       - containerPort: 80
+
+     - name: redis
+       image: redis:latest
+       ports:
+       - containerPort: 6379
+
+     - name: busybox
+       image: busybox:latest
+       command: ['sh', '-c', 'echo "i printed this after the container started!"']
+       command: ['sh', '-c', 'tail -f /dev/null']
+       resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "300m"
+
+     - name: mysql
+       image: mysql:5.7
+       env: 
+       - name: MYSQL_ROOT_PASSWORD
+         value: "temppw"
+       - name: MYSQL_DATABASE
+         value: "my_food_db"
+       - name: MYSQL_USER
+         value: "user_one"
+       - name: MYSQL_PASSWORD
+         value: "temppw"
+       - name: DEMO_GREETING
+         value: "Hello from the environment"
+       - name: DEMO_FAREWELL
+         value: "Such a sweet sorrow"
+
+  strategy:
+    type: Recreate
